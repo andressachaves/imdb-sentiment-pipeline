@@ -15,6 +15,11 @@ O modelo de classificação foi desenvolvido individualmente — cada integrante
 | Amostras de teste | 10.000 |
 | Modelo | LinearSVC + TF-IDF |
 
+
+�PNG
+
+
+
 ---
 
 ## Arquitetura
