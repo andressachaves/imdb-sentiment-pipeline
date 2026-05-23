@@ -16,8 +16,7 @@ O modelo de classificação foi desenvolvido individualmente — cada integrante
 | Modelo | LinearSVC + TF-IDF |
 
 
-�PNG
-
+![Matriz de Confusão](grafico_matriz_confusao.png)
 
 
 ---
