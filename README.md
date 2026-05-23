@@ -110,6 +110,5 @@ imdb-sentiment-pipeline/
 ## Autora
 
 **Andressa Cristina Chaves de Oliveira**  
-Estudante de Tecnologia em Banco de Dados — PUC Minas  
 Foco em Análise de Dados e Machine Learning  
 [github.com/andressachaves](https://github.com/andressachaves)
