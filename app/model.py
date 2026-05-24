@@ -1,6 +1,7 @@
 import joblib
 import numpy as np
 from pathlib import Path
+from huggingface_hub import hf_hub_download
 
 MODEL_PATH = Path(__file__).parent.parent / "model" / "linear_svc_tfidf_pipeline.joblib"
 
@@ -10,7 +11,12 @@ def load_model():
     global _pipeline
     if _pipeline is None:
         if not MODEL_PATH.exists():
-            raise FileNotFoundError(f"Modelo não encontrado em {MODEL_PATH}. Baixe do Google Drive.")
+            MODEL_PATH.parent.mkdir(exist_ok=True)
+            hf_hub_download(
+                repo_id="anddz/imdb-sentiment-linearsvc",
+                filename="linear_svc_tfidf_pipeline.joblib",
+                local_dir=MODEL_PATH.parent
+            )
         _pipeline = joblib.load(MODEL_PATH)
     return _pipeline
 
