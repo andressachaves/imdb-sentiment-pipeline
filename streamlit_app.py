@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 TMDB_API_KEY = "127f1692c84fafe27bf62a1540888e59"
-FASTAPI_URL = "FASTAPI_URL = "https://imdb-sentiment-pipeline.onrender.com/predict"
+FASTAPI_URL = "https://imdb-sentiment-pipeline.onrender.com/predict"
 TMDB_SEARCH_URL = "https://api.themoviedb.org/3/search/movie"
 TMDB_IMAGE_URL = "https://image.tmdb.org/t/p/w500"
 
