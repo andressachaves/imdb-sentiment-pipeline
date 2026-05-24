@@ -1,12 +1,12 @@
-# imdb-sentiment-pipeline
+# IMDB Sentiment Pipeline
 
-Pipeline de classificação de sentimentos aplicado ao dataset Stanford IMDB, desenvolvido como parte da graduação em Tecnologia em Banco de Dados (PUC Minas, 2025/2).
+Pipeline completo de análise de sentimentos aplicado ao dataset Stanford IMDB, com modelo em produção, API REST e dashboard interativo.
 
-O modelo de classificação foi desenvolvido individualmente — cada integrante do grupo criou e avaliou sua própria solução. Este repositório contém a minha implementação, que atingiu **92,33% de acurácia** com LinearSVC + TF-IDF.
+**[Demo ao vivo](https://imdb-sentiment-streamlit.onrender.com)** | **[API](https://imdb-sentiment-pipeline.onrender.com/docs)** | **[Modelo no Hugging Face](https://huggingface.co/anddz/imdb-sentiment-linearsvc)**
 
 ---
 
-## Resultado
+## Resultado do modelo
 
 | Métrica | Valor |
 |---|---|
@@ -15,104 +15,85 @@ O modelo de classificação foi desenvolvido individualmente — cada integrante
 | Amostras de teste | 10.000 |
 | Modelo | LinearSVC + TF-IDF |
 
-
 ![Matriz de Confusão](grafico_matriz_confusao.png)
-
 
 ---
 
 ## Arquitetura
-
-```
-Hugging Face (stanfordnlp/imdb)
-        │
-        ▼
+Etapa 01 — Dataset
+Hugging Face Dataset (stanfordnlp/imdb)
+│
+▼
 Etapa 02 — Coleta e ingestão
 coleta_dados.ipynb
-→ carrega splits train/test
-→ mapeia label numérico para "positive"/"negative"
-→ renomeia coluna text → review
-→ salva dataset.csv no Google Drive
-        │
-        ▼
+│
+▼
 Etapa 03 — Limpeza e processamento
-processamento.ipynb → camadas Silver/Gold
-        │
-        ▼
+processamento.ipynb
+│
+▼
 Etapa 04 — Modelagem
-script_svm.ipynb
-→ lê dataset.csv (ou Parquet como fallback)
-→ padroniza colunas automaticamente
-→ treina TF-IDF + LinearSVC
-→ avalia com accuracy, F1 e matriz de confusão
-→ salva pipeline com joblib
-```
+script_svm.ipynb → LinearSVC + TF-IDF → 92,33% acurácia
+│
+▼
+Hugging Face Hub (modelo hospedado)
+│
+▼
+FastAPI (API REST em produção)
+│
+▼
+Streamlit (dashboard com busca de filmes via TMDB)
 
 ---
-
 ## Stack
-
 - Python 3
-- Google Colab
-- Pandas / NumPy
-- scikit-learn (TfidfVectorizer, LinearSVC, Pipeline)
-- Matplotlib
-- Hugging Face Datasets
-- joblib
-
+- scikit-learn (TfidfVectorizer + LinearSVC)
+- FastAPI + Uvicorn
+- Streamlit
+- Hugging Face Hub
+- TMDB API
+- Render (deploy)
+- Google Colab + Google Drive (treinamento)
 ---
+## Como executar localmente
+**Pré-requisitos:** Python 3.11+
+```bash
+git clone https://github.com/andressachaves/imdb-sentiment-pipeline.git
+cd imdb-sentiment-pipeline
+pip install -r requirements.txt
+Rodar a API:
 
-## Como executar
+python -m uvicorn app.main:app --reload
+Rodar o dashboard:
 
-> Os notebooks foram desenvolvidos para rodar no **Google Colab** com dados armazenados no **Google Drive**.
+python -m streamlit run streamlit_app.py
+Na primeira execução a API baixa o modelo do Hugging Face automaticamente.
 
-### Etapa 02 — Coleta
-1. Abra `coleta_dados.ipynb` no Google Colab
-2. Execute as células sequencialmente
-3. O notebook baixa o dataset `stanfordnlp/imdb` via Hugging Face (25.000 amostras de treino + 25.000 de teste)
-4. Mapeia os labels numéricos para `"positive"` e `"negative"`
-5. Salva `dataset.csv` na pasta `/MyDrive/Eixo_05/dados/`
+API
+Endpoint: POST /predict
 
-### Etapa 03 — Processamento
-1. Abra `processamento.ipynb` no Google Colab
-2. Carrega os arquivos gerados na etapa anterior
-3. Realiza limpeza, tokenização e normalização textual
-4. Exporta a base tratada nas camadas Silver/Gold
+curl -X POST "https://imdb-sentiment-pipeline.onrender.com/predict" \
+  -H "Content-Type: application/json" \
+  -d '{"text": "This movie was absolutely amazing!"}'
+Resposta:
 
-### Etapa 04 — Modelagem
-1. Abra `script_svm.ipynb` no Google Colab
-2. O script localiza automaticamente `dataset.csv` no Drive (com fallback para Parquet)
-3. Padroniza os nomes das colunas automaticamente
-4. Treina o pipeline TF-IDF + LinearSVC
-5. Gera relatório de classificação e matriz de confusão
-6. Salva o pipeline treinado em `/MyDrive/Eixo_05/modelos/linear_svc_tfidf_pipeline.joblib`
+{
+  "sentiment": "positive",
+  "confidence": 0.9712,
+  "label": 1
+}
+Limitações conhecidas
+Modelo treinado para reviews em inglês — textos em outros idiomas terão baixa confiança
+Textos neutros ficam próximos de 50% de confiança — o modelo só conhece positivo e negativo
+Negações complexas podem ser mal interpretadas — limitação do TF-IDF que analisa palavras isoladas
+Próximos passos
+não concluído
+Comparação de modelos (Naive Bayes, Logistic Regression, BERT)
+não concluído
+Suporte a português com modelo multilingual
+não concluído
+Histórico de análises com gráfico de sentimentos
+não concluído
+Monitoramento de drift do modelo
 
----
 
-## Estrutura do repositório
-
-```
-imdb-sentiment-pipeline/
-├── projeto/
-│   └── Etapa_4/
-│       └── script_svm.ipynb   # modelo LinearSVC — 92,33% de acurácia
-├── coleta_dados.ipynb          # etapa 02 — ingestão e geração do CSV
-├── processamento.ipynb         # etapa 03 — Silver/Gold
-├── README.md
-└── .gitignore
-```
-
----
-
-## Próximos passos
-
-- Comparação entre modelos (Naive Bayes, Logistic Regression, BERT)
-- Dashboard de resultados via Streamlit ou FastAPI
-
----
-
-## Autora
-
-**Andressa Cristina Chaves de Oliveira**  
-Foco em Análise de Dados e Machine Learning  
-[github.com/andressachaves](https://github.com/andressachaves)
